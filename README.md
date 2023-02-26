@@ -14,7 +14,7 @@ which will let you organize your work on any project or simply make timetable fo
       - settings.py  
       -  urls.py  
       -  wsgi.py
-   - todolistapp
+    - todolistapp
       - admin.py  
       -  apps.py  
       -  forms.py   - **Forms classes**
