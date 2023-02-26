@@ -1,11 +1,11 @@
 from django.db import models
 
 
-class Projects(models.Model):
+class Project(models.Model):
     name = models.CharField(max_length=250)
 
 
-class Tasks(models.Model):
+class Task(models.Model):
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=50)
-    project_id = models.ForeignKey(Projects, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)

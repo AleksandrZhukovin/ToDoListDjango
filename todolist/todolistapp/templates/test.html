@@ -7,11 +7,12 @@
 <body>
 <form method="POST">
  {% csrf_token %}
+    {{ form }}
  <input type="submit" name="btn" value="yes">
 </form>
-{{ val }}
+{{ data }}
 {% for i in tasks %}
-{{ i.name }}{{ i.status }}{{ i.project_id.name }}
+{{ i.name }}{{ i.status }}{{ i.project.name }}
 {% endfor %}
 </body>
 </html>
