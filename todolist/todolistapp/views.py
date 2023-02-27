@@ -12,4 +12,4 @@ def test(request):
             val = 'OK'
     else:
         form = TestForm()
-    return render(request, 'test.html', {'val': val, 'tasks': data})
+    return render(request, 'test.html', {'val': val, 'data': data})
