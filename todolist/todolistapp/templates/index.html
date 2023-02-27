@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ToDoList</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-{% if data %}
-{% for p in data %}
-<h3><a href="#">{{ p.name }}</a></h3>
-{% endfor %}
+{% block content %}
+
+{% if projects %}
+
+<form>
+    {% for i in projects %}
+    {% csrf_token %}
+    <h3><a href="{{ i.id }}/">{{ i.name }}</a> <a href="/delete_project{{ i.id }}">Delete</a></h3>
+    {% endfor %}
+    <input type="submit" value="yes">
+</form>
+
 {% endif %}
 
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for t in tasks %}
+<p>{{ t.name }}{{ t.status }}{{ t.project.name }}</p>
+{% endfor %}
+
+{% endblock %}
