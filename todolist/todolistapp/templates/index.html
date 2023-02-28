@@ -7,7 +7,7 @@
 <form>
     {% for i in projects %}
     {% csrf_token %}
-    <h3><a href="{{ i.id }}/">{{ i.name }}</a> <a href="/delete_project{{ i.id }}">Delete</a></h3>
+    <h3><a href="{{ i.id }}/">{{ i.name }}</a> <a href="/delete_project{{ i.id }}">Delete</a>  <a href="/edit_project{{ i.id }}">Edit</a></h3>
     {% endfor %}
     <input type="submit" value="yes">
 </form>

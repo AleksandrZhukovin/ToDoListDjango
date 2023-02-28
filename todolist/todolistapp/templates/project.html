@@ -3,7 +3,7 @@
 {% block content %}
 
 {% for t in tasks %}
-<p>{{ t.name }}{{ t.status }}{{ t.project.name }}</p>
+<p><b>{{ t.priority }}</b> {{ t.name }} {{ t.status }} {% if t.deadline %} {{ t.deadline }} {% endif %}</p>
 {% endfor %}
 
 {% endblock %}

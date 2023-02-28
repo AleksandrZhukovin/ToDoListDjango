@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    {% for t in tasks %}
+    <p><b>{{ t.priority }}</b> {{ t.name }} {{ t.status }} <a href="/edit_task{{ t.id }}">Edit</a> <a href="/delete_task{{ t.id }}">Delete</a></p>
+    {% endfor %}
+    <a href="/add_task_to{{ project.id }}/">Add Task</a>
+    <input type="submit" value="enter">
+
+</form>
+
+{% endblock %}

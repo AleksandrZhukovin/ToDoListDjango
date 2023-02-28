@@ -7,4 +7,13 @@ class InputProject(forms.Form):
 
 class InputTask(forms.Form):
     name = forms.CharField()
-    status = forms.ChoiceField(choices=(('1', 'Done'), ('2', 'Undone')))
+    priority = forms.IntegerField()
+    status = forms.ChoiceField(choices=(('Undone', 'Undone'), ('Done', 'Done')))
+    deadline = forms.DateField(required=False)
+
+
+class EditProject(forms.Form):
+    name = forms.CharField(initial='proj')
+    task = forms.CharField(initial='t')
+
+
