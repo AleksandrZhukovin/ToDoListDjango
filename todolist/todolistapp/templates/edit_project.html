@@ -4,12 +4,53 @@
 
 <form method="POST">
     {% csrf_token %}
-    {{ form }}
+    <center>{{ form }}</center>
+    <div class="container">
+    <div class="row">
+    <h2 class="mb-2 text-center">{{ project.name }}</h2>
+    {% if tasks %}
+        <div class="col">
+            <h4>Priority</h4>
+        </div>
+        <div class="col">
+            <h4>Task</h4>
+        </div>
+        <div class="col">
+            <h4>Deadline</h4>
+        </div>
+         <div class="col">
+             <h4>Status</h4>
+        </div>
+        <div class="col"></div>
+        <hr>
     {% for t in tasks %}
-    <p><b>{{ t.priority }}</b> {{ t.name }} {{ t.status }} <a href="/edit_task{{ t.id }}">Edit</a> <a href="/delete_task{{ t.id }}">Delete</a></p>
+        <div class="col">
+            <h5>{{ t.priority }}</h5>
+        </div>
+        <div class="col">
+            <h5>{{ t.name }}</h5>
+        </div>
+        <div class="col">
+            <h5>{% if t.deadline %} {{ t.deadline }} {% endif %}</h5>
+        </div>
+         <div class="col">
+             {% if 'Undone' in t.status %}
+                 <h5 class="text-warning">{{ t.status }}</h5>
+             {% else %}
+                 <h5 class="text-success">{{ t.status }}</h5>
+             {% endif %}
+        </div>
+         <div class="col">
+             <h5><a class='btn btn-warning' href="/edit_task{{ t.id }}">Edit</a> <a class='btn btn-warning' href="/delete_task{{ t.id }}">Delete</a></h5>
+        </div>
+        <hr>
     {% endfor %}
-    <a href="/add_task_to{{ project.id }}/">Add Task</a>
-    <input type="submit" value="enter">
+        {% endif %}
+
+        </div>
+</div>
+    <a class='btn btn-warning mx-3' href="/add_task_to{{ project.id }}/">Add Task</a>
+    <input class='btn btn-warning' type="submit" value="Enter">
 
 </form>
 

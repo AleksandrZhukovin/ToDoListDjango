@@ -2,13 +2,12 @@
 
 {% block content %}
 
+<center>
 <form method="POST">
  {% csrf_token %}
     {{ form }}
- <input type="submit" value="yes">
+ <input class='btn btn-warning' type="submit" value="Add">
 </form>
-{% for t in task %}
-{{ t.name }}{{ t.status }}{{ t.project }}
-{% endfor %}
+</center>
 
 {% endblock %}

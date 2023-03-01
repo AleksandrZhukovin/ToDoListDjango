@@ -2,16 +2,24 @@
 
 {% block content %}
 
-{% if projects %}
-
-<form>
+<div class="container">
+    <div class="row">
+        <h2 class="mb-2 text-center">Projects</h2>
+        <hr>
+    {% if projects %}
     {% for i in projects %}
-    {% csrf_token %}
-    <h3><a href="{{ i.id }}/">{{ i.name }}</a> <a href="/delete_project{{ i.id }}">Delete</a>  <a href="/edit_project{{ i.id }}">Edit</a></h3>
+        <div class="col">
+            <h4><a class="link-dark" href="{{ i.id }}/">{{ i.name }}</a></h4>
+        </div>
+        <div class="col">
+            <h4><a class='btn btn-warning' href="/delete_project{{ i.id }}">Delete</a> <a class='btn btn-warning' href="/edit_project{{ i.id }}">Edit</a></h4>
+        </div>
+        <hr>
     {% endfor %}
-    <input type="submit" value="yes">
-</form>
+        {% endif %}
+        </div>
+</div>
 
-{% endif %}
+
 
 {% endblock %}
