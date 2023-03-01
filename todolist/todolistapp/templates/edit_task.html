@@ -2,10 +2,12 @@
 
 {% block content %}
 
+<center>
 <form method="POST">
-    {% csrf_token %}
+ {% csrf_token %}
     {{ form }}
-    <input type="submit" value="enter">
+ <input class='btn btn-warning' type="submit" value="Enter">
 </form>
+</center>
 
 {% endblock %}

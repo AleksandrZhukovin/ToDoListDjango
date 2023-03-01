@@ -1,9 +1,44 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-{% for t in tasks %}
-<p><b>{{ t.priority }}</b> {{ t.name }} {{ t.status }} {% if t.deadline %} {{ t.deadline }} {% endif %}</p>
-{% endfor %}
-
+<div class="container">
+    <div class="row">
+    <h2 class="mb-2 text-center">{{ project }}</h2>
+    {% if tasks %}
+        <div class="col">
+            <h4>Priority</h4>
+        </div>
+        <div class="col">
+            <h4>Task</h4>
+        </div>
+        <div class="col">
+            <h4>Deadline</h4>
+        </div>
+         <div class="col">
+             <h4>Status</h4>
+        </div>
+        <hr>
+    {% for t in tasks %}
+        <div class="col">
+            <h5>{{ t.priority }}</h5>
+        </div>
+        <div class="col">
+            <h5>{{ t.name }}</h5>
+        </div>
+        <div class="col">
+            <h5>{% if t.deadline %} {{ t.deadline }} {% endif %}</h5>
+        </div>
+         <div class="col">
+             {% if 'Undone' in t.status %}
+                 <h5 class="text-warning">{{ t.status }}</h5>
+             {% else %}
+                 <h5 class="text-success">{{ t.status }}</h5>
+             {% endif %}
+        </div>
+        <hr>
+    {% endfor %}
+        {% endif %}
+        <h3><a class='btn btn-warning' href="/edit_project{{ project_id }}">Edit</a></h3>
+        </div>
+</div>
 {% endblock %}

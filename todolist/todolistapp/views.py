@@ -14,10 +14,12 @@ def index(request):
 
 
 def project(request, project_id):
-    tasks = Task.objects.filter(project=project_id)
+    tasks = Task.objects.filter(project=project_id).order_by('priority')
     context = {
         'tasks': tasks,
-        'title': 'Add Project'
+        'title': 'Add Project',
+        'project_id': project_id,
+        'project': tasks[0].project.name
     }
     return render(request, 'project.html', context)
 
@@ -56,7 +58,8 @@ def add_tasks(request, project_id):
     context = {
         'form': form,
         'tasks': tasks,
-        'title': f'Add Tasks to Project {p.name}'
+        'title': f'Add Tasks to Project {p.name}',
+        'project': p.name
     }
     return render(request, 'add_tasks.html', context)
 
@@ -73,6 +76,11 @@ def edit_project(request, project_id):
 
     if request.method == "POST":
         form = InputProject(request.POST, initial={'name': p.name})
+
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            p.name = name
+            p.save()
 
     else:
         form = InputProject(initial={'name': p.name})
