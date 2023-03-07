@@ -1,150 +1,100 @@
-from django.shortcuts import render, redirect
-from .forms import InputProject, InputTask
+from django.urls import reverse_lazy
 from .models import Task, Project
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
-def index(request):
-    projects = Project.objects.all()
+class HomeView(ListView):
+    model = Project
+    template_name = 'index.html'
+    context_object_name = 'projects'
 
-    context = {
-        'projects': projects,
-        'title': 'Home'
-    }
-    return render(request, 'index.html', context)
-
-
-def project(request, project_id):
-    tasks = Task.objects.filter(project=project_id).order_by('priority')
-    context = {
-        'tasks': tasks,
-        'title': 'Add Project',
-        'project_id': project_id,
-        'project': tasks[0].project.name
-    }
-    return render(request, 'project.html', context)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Home'
+        return context
 
 
-def add_project(request):
-    if request.method == 'POST':
-        form = InputProject(request.POST)
-        if form.is_valid():
-            project_n = form.cleaned_data['name']
-            p = Project(name=project_n)
-            p.save()
-            return redirect(f'/add_tasks{p.id}/')
-    else:
-        form = InputProject()
-    context = {
-        'form': form
-    }
-    return render(request, 'add_project.html', context)
+class ProjectView(ListView):
+    template_name = 'project.html'
+    context_object_name = 'tasks'
+
+    def get_queryset(self):
+        return Task.objects.filter(project=self.kwargs['project_id'])
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = Project.objects.get(id=self.kwargs['project_id']).name
+        context['project_id'] = self.kwargs['project_id']
+        context['tasks'] = self.get_queryset()
+        return context
 
 
-def add_tasks(request, project_id):
-    tasks = Task.objects.filter(project=project_id)
-    p = Project.objects.get(id=project_id)
-    if request.method == "POST":
-        form = InputTask(request.POST)
-        if form.is_valid():
-            status = form.cleaned_data['status']
-            name = form.cleaned_data['name']
-            priority = form.cleaned_data['priority']
-            deadline = form.cleaned_data['deadline']
-            t = Task(name=name, status=status, priority=priority, project=p, deadline=deadline)
-            t.save()
-    else:
-        form = InputTask()
-
-    context = {
-        'form': form,
-        'tasks': tasks,
-        'title': f'Add Tasks to Project {p.name}',
-        'project': p.name
-    }
-    return render(request, 'add_tasks.html', context)
+class AddProjectView(CreateView):
+    model = Project
+    template_name = 'add_project.html'
+    fields = ['name']
+    success_url = reverse_lazy('index')
 
 
-def delete_project(request, project_id):
-    p = Project.objects.get(id=project_id)
-    p.delete()
-    return redirect('/')
+class DeleteProjectView(DeleteView):
+    model = Project
+    template_name = 'delete_project.html'
+    success_url = reverse_lazy('index')
 
 
-def edit_project(request, project_id):
-    p = Project.objects.get(id=project_id)
-    tasks = Task.objects.filter(project=p).order_by('priority')
+class UpdateProjectView(UpdateView):
+    model = Project
+    fields = ['name']
+    template_name = 'edit_project.html'
 
-    if request.method == "POST":
-        form = InputProject(request.POST, initial={'name': p.name})
-
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            p.name = name
-            p.save()
-
-    else:
-        form = InputProject(initial={'name': p.name})
-
-    context = {
-        'form': form,
-        'tasks': tasks,
-        'project': p,
-        'title': f'Edit Project {p.name}'
-    }
-    return render(request, 'edit_project.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = Project.objects.get(id=self.kwargs['pk']).name
+        context['tasks'] = Task.objects.filter(project=self.kwargs['pk']).order_by('priority')
+        return context
 
 
-def edit_task(request, task_id):
-    task = Task.objects.get(id=task_id)
-    if request.method == "POST":
-        form = InputTask(request.POST, initial={'name': task.name, 'status': task.status, 'priority': task.priority,
-                                                'deadline': task.deadline})
+class AddTaskView(CreateView):
+    model = Task
+    fields = ['name', 'priority', 'deadline', 'status']
+    template_name = 'add_tasks.html'
 
-        if form.is_valid():
-            task.name = form.cleaned_data['name']
-            task.priority = form.cleaned_data['priority']
-            task.status = form.cleaned_data['status']
-            task.deadline = form.cleaned_data['deadline']
-            task.save()
-            return redirect(f'/edit_project{task.project.id}/')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = Project.objects.get(id=self.kwargs['project_id']).name
+        context['project'] = Project.objects.get(id=self.kwargs["project_id"])
+        context['tasks'] = Task.objects.filter(project=self.kwargs['project_id']).order_by('priority')
+        self.success_url = f'/add_tasks{self.kwargs["project_id"]}/'
+        return context
 
-    else:
-        form = InputTask(initial={'name': task.name, 'status': task.status, 'priority': task.priority,
-                                  'deadline': task.deadline})
-
-    context = {
-        'form': form,
-        'task_id': task_id,
-        'title': f'Edit Project {task.project.name}'
-    }
-    return render(request, 'edit_task.html', context)
+    def form_valid(self, form):
+        form.instance.project = self.get_context_data()['project']
+        return super().form_valid(form)
 
 
-def delete_task(request, task_id):
-    t = Task.objects.get(id=task_id)
-    t.delete()
-    return redirect(f'/edit_project{t.project.id}/')
+class EditTaskView(UpdateView):
+    model = Task
+    fields = ['name', 'priority', 'deadline', 'status']
+    template_name = 'edit_task.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task = Task.objects.get(id=self.kwargs['pk'])
+        self.initial = {'name': task.name, 'status': task.status, 'priority': task.priority,
+                        'deadline': task.deadline}
+        context['title'] = f'Edit {task.name}'
+        self.success_url = f'/edit_project{self.kwargs["project_id"]}/'
+        return context
+
+    def get_success_url(self):
+        return f'/edit_project{self.kwargs["project_id"]}/'
 
 
-def add_task(request, project_id):
-    p = Project.objects.get(id=project_id)
-    if request.method == "POST":
-        form = InputTask(request.POST)
+class DeleteTaskView(DeleteView):
+    model = Task
+    template_name = 'delete_task.html'
 
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            priority = form.cleaned_data['priority']
-            status = form.cleaned_data['status']
-            deadline = form.cleaned_data['deadline']
-            task = Task(name=name, priority=priority, status=status, project=p, deadline=deadline)
-            task.save()
-            return redirect(f'/edit_project{project_id}/')
-
-    else:
-        form = InputTask()
-
-    context = {
-        'form': form,
-        'title': f'Add Task to Project {p.name}'
-    }
-    return render(request, 'edit_task.html', context)
+    def get_success_url(self):
+        project = Task.objects.get(id=self.kwargs['pk']).project
+        return f'/edit_project{project.id}'
