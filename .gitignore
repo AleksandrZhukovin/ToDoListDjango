@@ -5,7 +5,6 @@
 todolist/todolist/__pycache__/
 todolist/todolistapp/__pycache__/
 media
-todolist/db.sqlite3
 
 # PyCharm
 .idea
